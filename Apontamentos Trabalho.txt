@@ -34,3 +34,4 @@ setPecaColuna(N,Peca,[Peca1|Resto],[Peca1|Mais]):-
 format ("Texto ~d ~f ~p ~n",[ , , ,])
 
 format("Numero ~d int ~f float ~p termo ~n", [2, 3.15, t(t)])
+
