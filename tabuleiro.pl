@@ -29,3 +29,15 @@ tabuleiroInicial([[0,0,0,0,0,0,0,0,0,0],
                   [2,0,2,0,2,0,2,0,2,0],
                   [2,0,2,0,2,0,2,0,2,0],
                   [0,0,0,0,0,0,0,0,0,0]]).
+
+
+displayLine([Head|Line]):-
+write(Head),
+write('|'),
+displayLine([Line]).
+
+
+display([Head|Tabuleiro]) :-
+   write(' '),
+   displayLine(Head),
+   display(Tail).
