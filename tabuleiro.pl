@@ -30,14 +30,20 @@ tabuleiroInicial([[0,0,0,0,0,0,0,0,0,0],
                   [2,0,2,0,2,0,2,0,2,0],
                   [0,0,0,0,0,0,0,0,0,0]]).
 
+imprimirLine([]):-
+    write('|'),
+    write('\n'),
+    write('+-+-+-+-+-+-+-+-+-+-+\n').
+imprimirLine([Head|Tail]):-
+    write('|'),
+    write(Head),
+    imprimirLine(Tail).
 
-displayLine([Head|Line]):-
-write(Head),
-write('|'),
-displayLine([Line]).
+imprimir([]).
+imprimir([Head|Tabuleiro]) :-
+    imprimirLine(Head),
+    imprimir(Tabuleiro).
 
-
-display([Head|Tabuleiro]) :-
-   write(' '),
-   displayLine(Head),
-   display(Tail).
+imprimirTabuleiro(Tabuleiro) :-
+    write('+-+-+-+-+-+-+-+-+-+-+\n'),
+    imprimir(Tabuleiro).
