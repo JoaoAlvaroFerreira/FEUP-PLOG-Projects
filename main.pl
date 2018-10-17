@@ -1,5 +1,5 @@
 :- include('tabuleiro.pl').
-
+:-dynamic cell/3.
 start:-
 
     printScreen.
