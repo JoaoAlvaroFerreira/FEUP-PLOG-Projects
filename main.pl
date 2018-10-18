@@ -11,5 +11,4 @@ printScreen:-
     repeat,
     imprimirTabuleiro(Tabuleiro),
     read(X),
-    write(X),
-    !.
+    write(X), X=fim.
