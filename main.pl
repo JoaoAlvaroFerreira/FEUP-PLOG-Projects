@@ -1,8 +1,8 @@
 :- include('tabuleiro.pl').
+:- include('menu.pl').
 :-dynamic cell/3.
 start:-
-
-    printScreen.
+    menu.
 
     
 printScreen:-
@@ -10,5 +10,6 @@ printScreen:-
     tabuleiroInicial(Tabuleiro),
     repeat,
     imprimirTabuleiro(Tabuleiro),
+
     read(X),
     write(X), X=fim.
