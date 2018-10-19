@@ -1,6 +1,4 @@
 
-
-
 menu:-
     repeat,
     clearConsole,
@@ -13,11 +11,15 @@ menu:-
     write('| (____/\\| )   ( || )  \\  || )  \\  || (___) || )  \\  |  \n'),
     write('(_______/|/     \\||/    )_)|/    )_)(_______)|/    )_)  \n'),
     write('1-Iniciar Jogo\n'),
-    write('2-Testar\n'),
+    write('2-Imprimir tabuleiro\n'),
     write('0-Exit\n'),
     read(Escolha),
-    (((Escolha = 1)-> ola)|
-    ((Escolha = 0))),
+    clearConsole,
+    (
+        ((Escolha = 1)-> ola)|
+        ((Escolha = 2)-> printScreen)|
+        ((Escolha = 0))
+    ),
     !.
                                                         
 ola:- write('ola'),!.

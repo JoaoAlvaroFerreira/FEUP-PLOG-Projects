@@ -8,8 +8,4 @@ start:-
 printScreen:-
 
     tabuleiroInicial(Tabuleiro),
-    repeat,
-    imprimirTabuleiro(Tabuleiro),
-
-    read(X),
-    write(X), X=fim.
+    imprimirTabuleiro(Tabuleiro).
