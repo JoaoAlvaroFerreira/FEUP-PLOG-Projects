@@ -33,17 +33,27 @@ tabuleiroInicial([[0,0,0,0,0,0,0,0,0,0],
 imprimirLine([]):-
     write('|'),
     write('\n'),
-    write('+-+-+-+-+-+-+-+-+-+-+\n').
+    write('--+-+-+-+-+-+-+-+-+-+-+\n').
 imprimirLine([Head|Tail]):-
     write('|'),
     write(Head),
     imprimirLine(Tail).
 
-imprimir([]).
-imprimir([Head|Tabuleiro]) :-
+imprimir([],Linha).
+imprimir([Head|Tabuleiro],Linha) :-
+    Linha =:= 10,
+    write(Linha),
     imprimirLine(Head),
-    imprimir(Tabuleiro).
+    NewNumber is Linha + 1,
+    imprimir(Tabuleiro,NewNumber).
+imprimir([Head|Tabuleiro],Linha) :-
+    write(' '),
+    write(Linha),
+    imprimirLine(Head),
+    NewNumber is Linha + 1,
+    imprimir(Tabuleiro,NewNumber).
 
 imprimirTabuleiro(Tabuleiro) :-
-    write('+-+-+-+-+-+-+-+-+-+-+\n'),
-    imprimir(Tabuleiro).
+    write('  |A|B|C|D|E|D|G|H|I|J|\n'),
+    write('--+-+-+-+-+-+-+-+-+-+-+\n'),
+    imprimir(Tabuleiro,1).

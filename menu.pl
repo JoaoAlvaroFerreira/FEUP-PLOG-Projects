@@ -16,8 +16,8 @@ menu:-
     read(Escolha),
     clearConsole,
     (
-        ((Escolha = 1)-> ola)|
-        ((Escolha = 2)-> printScreen)|
+        ((Escolha = 1)-> ola , fail)|
+        ((Escolha = 2)-> printScreen , fail)|
         ((Escolha = 0))
     ),
     !.
