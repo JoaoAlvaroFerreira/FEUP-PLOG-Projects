@@ -21,7 +21,7 @@ tabuleiroInicial([[32,32,32,32,32,32,32,32,32,32],
 
 /*        SETS              */
 
-setColuna(1,[_|Resto],[Peca|Resto],Peca).
+setColuna(1,[_|Resto],[Peca|Resto],Peca):- !.
 setColuna(Natual,[PecaAtual|Resto],[PecaAtual|LinhaResto],Peca):-
     Natual>1,
     ProximoAtual is Natual - 1,
@@ -38,7 +38,7 @@ setPeca(Natual,Ncoluna,[LinhaAtual|Resto],[LinhaAtual|NovaLinha],Peca):-
 /*         GETS            */
 
 getIterativo(Natual,Nobjetivo,[LinhaAtual|Resto],LinhaAtual):-
-    Natual =:= Nobjetivo.
+    Natual =:= Nobjetivo,!.
 getIterativo(Natual,Nobjetivo,[LinhaAtual|Resto],Linha):-
     Natual \= Nobjetivo,
     NovoIT is Natual + 1,

@@ -13,14 +13,10 @@ printScreen:-
 
 pressToContinue:-
     write('Press any button to continue.'),
-    get_byte(A),
-    get_byte(B).
+    read_line(A).
 
-test(Linha):-
-    tabuleiroInicial(Tab),
-    imprimirTabuleiro(Tab),
-    setPeca(5,5,Tab,NovoTab,52),
-    imprimirTabuleiro(NovoTab).
+test(Linha,Coluna):-
+    lerUserCelula(Linha,Coluna).
 
     
     
