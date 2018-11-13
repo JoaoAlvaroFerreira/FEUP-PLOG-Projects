@@ -1,5 +1,6 @@
 :- include('tabuleiro.pl').
 :- include('menu.pl').
+:- include('regras.pl').
 :- dynamic cell/3.
 start:-
     menu.

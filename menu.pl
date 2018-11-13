@@ -50,5 +50,5 @@ lerUserCelula(Linha,Coluna):-
     read_line(ValorLido),
     length(ValorLido,Tamanho),
     Tamanho =< 4,
-    Tamanho >= 2,
+    Tamanho >= 2, 
     separar(Linha,Coluna,ValorLido).
