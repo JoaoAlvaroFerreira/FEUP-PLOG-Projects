@@ -1,8 +1,8 @@
 /*
 0 - Empty Cell
 1 - White Soldier
-2 - White City
-3 - Black Soldier
+3 - White City
+2 - Black Soldier
 4 - Black City
 10x10 Rows,
 */
@@ -21,7 +21,7 @@ tabuleiroInicial([[32,32,32,32,32,32,32,32,32,32],
 
 /*        SETS              */
 
-setColuna(1,[_|Resto],[Peca|Resto],Peca):- !.
+setColuna(1,[_|_],[_|_],_):- !.
 setColuna(Natual,[PecaAtual|Resto],[PecaAtual|LinhaResto],Peca):-
     Natual>1,
     ProximoAtual is Natual - 1,
@@ -37,9 +37,9 @@ setPeca(Natual,Ncoluna,[LinhaAtual|Resto],[LinhaAtual|NovaLinha],Peca):-
 
 /*         GETS            */
 
-getIterativo(Natual,Nobjetivo,[LinhaAtual|Resto],LinhaAtual):-
+getIterativo(Natual,Nobjetivo,[LinhaAtual|_],LinhaAtual):-
     Natual =:= Nobjetivo,!.
-getIterativo(Natual,Nobjetivo,[LinhaAtual|Resto],Linha):-
+getIterativo(Natual,Nobjetivo,[_|Resto],Linha):-
     Natual \= Nobjetivo,
     NovoIT is Natual + 1,
     getIterativo(NovoIT,Nobjetivo,Resto,Linha).
@@ -57,7 +57,6 @@ getPeca(Nlinha,Ncoluna,Tabuleiro,Peca):-
 
 
 /*       PRINT  TABULEIRO                */
-write('\33\[2J').
 writeNumber(Number):-
     ((Number >= 10) ->
     format('~d',Number);
@@ -71,7 +70,7 @@ imprimirLine([Head|Tail]):-
     format('~c',Head),
     imprimirLine(Tail).
 
-imprimir([],Linha).
+imprimir([],_).
 imprimir([Head|Tabuleiro],Linha) :-
     writeNumber(Linha),
     imprimirLine(Head),

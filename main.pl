@@ -1,6 +1,7 @@
 :- include('tabuleiro.pl').
 :- include('menu.pl').
-:- include('regras.pl').
+:- include('regrasMove.pl').
+:- include('regrasCapture.pl').
 :- dynamic cell/3.
 start:-
     menu.
@@ -14,10 +15,12 @@ printScreen:-
 
 pressToContinue:-
     write('\n\nPrima qualquer botao para continuar.\n'),
-    read_line(A).
+    read_line(_).
 
-test(Linha,Coluna):-
-    lerUserCelula(Linha,Coluna).
+
+test(Moves):-
+    tabuleiroInicial(Tab),
+    getCaptures(1,7,2,Tab,Moves).
 
     
     
