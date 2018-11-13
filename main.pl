@@ -1,5 +1,6 @@
 :- include('tabuleiro.pl').
 :- include('menu.pl').
+
 :- dynamic cell/3.
 start:-
     menu.
@@ -12,7 +13,7 @@ printScreen:-
 
 
 pressToContinue:-
-    write('Press any button to continue.'),
+    write('\n\nPrima qualquer botao para continuar.\n'),
     read_line(A).
 
 test(Linha,Coluna):-

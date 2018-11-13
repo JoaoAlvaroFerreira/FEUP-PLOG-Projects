@@ -57,7 +57,7 @@ getPeca(Nlinha,Ncoluna,Tabuleiro,Peca):-
 
 
 /*       PRINT  TABULEIRO                */
-
+write('\33\[2J').
 writeNumber(Number):-
     ((Number >= 10) ->
     format('~d',Number);
