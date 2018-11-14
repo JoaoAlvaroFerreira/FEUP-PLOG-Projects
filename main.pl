@@ -2,7 +2,7 @@
 :- include('menu.pl').
 :- include('regrasMove.pl').
 :- include('regrasCapture.pl').
-:- dynamic cell/3.
+:- include('regrasCannon.pl').
 start:-
     menu.
 
@@ -18,11 +18,9 @@ pressToContinue:-
     read_line(_).
 
 
-test:-
+test(Moves):-
     tabuleiroInicial(Tab),
-    imprimirTabuleiro(Tab),
-    setPeca(2,2,Tab,NTab,51),
-    imprimirTabuleiro(NTab)
+    getCanonDisparos(1,2,2,Tab,Moves)
     
     .
 
