@@ -3,6 +3,8 @@
 :- include('regrasMove.pl').
 :- include('regrasCapture.pl').
 :- include('regrasCannon.pl').
+:- include('tabuleiroHelp.pl').
+:- dynamic player/1.
 start:-
     menu.
 
@@ -17,12 +19,20 @@ pressToContinue:-
     write('\n\nPrima qualquer botao para continuar.\n'),
     read_line(_).
 
+jogador(1).
+/*
+    player(N),
+    write(N),
+    retract(player(1)),
+    assert((player(2) :- write('cun'))),
+    player(N2),
+    write(N2)
+    .*/
 
-test(Moves):-
+test(NewBoard):-
     tabuleiroInicial(Tab),
-    getCanonDisparos(1,2,2,Tab,Moves)
-    
+    move([[2,2],[3,1]],Tab,NewBoard),
+    imprimirTabuleiro(NewBoard)
     .
-
     
     

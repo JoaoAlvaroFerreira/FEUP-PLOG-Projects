@@ -82,3 +82,18 @@ imprimirTabuleiro(Tabuleiro) :-
     write('--+-+-+-+-+-+-+-+-+-+-+\n'),
     imprimir(Tabuleiro,1).
 
+
+
+movesToTabuleiro([],NewTabuleiro,NewTabuleiro,_).
+movesToTabuleiro([[X,Y]|Resto],Tabuleiro,NewTabuleiro,Index):-
+    setPeca(X,Y,Tabuleiro,NewTabuleiro1,Index),
+    movesToTabuleiro(Resto,NewTabuleiro1,NewTabuleiro,Index).
+
+imprimirTabuleiroJogadas(Player,Linha,Coluna,Tabuleiro):-
+    getMovesPecaPlayer(Player,Linha,Coluna,Tabuleiro,Moves),
+    getCaptures(Player,Linha,Coluna,Tabuleiro,CapMoves),
+    getCanonDisparos(Player,Linha,Coluna,Tabuleiro,CannonMoves),
+    movesToTabuleiro(Moves,Tabuleiro,NewTabuleiro1,35),
+    movesToTabuleiro(CapMoves,NewTabuleiro1,NewTabuleiro2,36),
+    movesToTabuleiro(CannonMoves,NewTabuleiro2,NewTabuleiro,88),
+    imprimirTabuleiro(NewTabuleiro).
