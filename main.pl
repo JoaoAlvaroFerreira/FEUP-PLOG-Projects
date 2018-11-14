@@ -1,8 +1,15 @@
+:- use_module(library(lists)).
+:- use_module(library(random)).
+
 :- include('tabuleiro.pl').
 :- include('menu.pl').
 :- include('regrasMove.pl').
 :- include('regrasCapture.pl').
 :- include('regrasCannon.pl').
+:- include('cannon.pl').
+
+:- dynamic cell/3.
+
 start:-
     menu.
 
