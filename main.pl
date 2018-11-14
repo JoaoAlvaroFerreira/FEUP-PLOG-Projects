@@ -1,3 +1,6 @@
+:- use_module(library(lists)).
+:- use_module(library(random)).
+
 :- include('tabuleiro.pl').
 :- include('menu.pl').
 :- include('regrasMove.pl').
@@ -5,6 +8,9 @@
 :- include('regrasCannon.pl').
 :- include('tabuleiroHelp.pl').
 :- dynamic player/1.
+:- include('cannon.pl').
+
+
 start:-
     menu.
 
