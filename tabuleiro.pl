@@ -21,7 +21,7 @@ tabuleiroInicial([[32,32,32,32,32,32,32,32,32,32],
 
 /*        SETS              */
 
-setColuna(1,[_|_],[_|_],_):- !.
+setColuna(1,[_|Resto],[Peca|Resto],Peca):- !.
 setColuna(Natual,[PecaAtual|Resto],[PecaAtual|LinhaResto],Peca):-
     Natual>1,
     ProximoAtual is Natual - 1,

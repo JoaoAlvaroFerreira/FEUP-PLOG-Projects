@@ -18,9 +18,13 @@ pressToContinue:-
     read_line(_).
 
 
-test(Moves):-
+test:-
     tabuleiroInicial(Tab),
-    getCaptures(1,7,2,Tab,Moves).
+    imprimirTabuleiro(Tab),
+    setPeca(2,2,Tab,NTab,51),
+    imprimirTabuleiro(NTab)
+    
+    .
 
     
     
