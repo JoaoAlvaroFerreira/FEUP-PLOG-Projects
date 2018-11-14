@@ -1,18 +1,18 @@
 
 checkIfSame(Linha, Coluna, [H|T], R):-
 	((Linha =:= H,
-	Coluna =:= T,) -> 
-	R = 1,
+	Coluna =:= T) -> 
+	R = 1
 	;
-	R = 0,).
+	R = 0).
 
 checkValidMove([],[],[],[]).
 
 checkValidMove(Linha, Coluna, [H|T], R) :- 
 	checkIfSame(Linha,Coluna, H, R), 
 	(R =:= 1 ->
-
-		;
+		true
+	;
 	checkValidMove(Linha, Coluna, T, R)).
 
 
@@ -27,13 +27,13 @@ whiteTurn(Tabuleiro, NovoTabuleiro, 'jogador' , 'human'):-
 			write('Indique para onde quer mover a peca ou a posicao da peca inimiga a capturar:'),
 			lerUserCelula(Linha2,Coluna2),
 			getPeca(Linha2,Coluna2,Tabuleiro,Peca2),	
-			getMovesPecaPlayer(1,Linha1,Coluna1,Tabuleiro,NovoMoves),
+			getMovesPecaPlayer(1,Linha1,Coluna1,Tabuleiro,NovoMoves)
 					;
-					true,
+					true
 					)
 
 		;
-		true,
+		true
 		)
 	
 	.
@@ -42,10 +42,10 @@ whiteTurn(Tabuleiro, NovoTabuleiro, 'jogador' , 'human'):-
 play(Tabuleiro, PecasBrancas, PecasNegras,Dificuldade):-
 	clearConsole,
 	whiteTurn(Tabuleiro, NovoTabuleiro, PecasBrancas,Dificuldade),
-	imprimirTabuleiro(NovoTabuleiro)
+	imprimirTabuleiro(NovoTabuleiro),
 	checkVictory(NovoTabuleiro),
 	blackTurn(NovoTabuleiro, ProximoTabuleiro, PecasBrancas,Dificuldade),
-	imprimirTabuleiro(ProximoTabuleiro)
+	imprimirTabuleiro(ProximoTabuleiro),
 	checkVictory(ProximoTabuleiro),
 	play(ProximoTabuleiro, PecasBrancas,PecasNegras).
 
