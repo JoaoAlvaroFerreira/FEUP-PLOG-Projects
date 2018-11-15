@@ -41,7 +41,7 @@ modeChoice:-
     clearConsole,
     (
         ((Escolha = 1)-> sideChoice, pressToContinue, fail)|
-        ((Escolha = 2)-> startGame('jogador','jogador') , pressToContinue, fail)|
+        ((Escolha = 2)-> startGame('jogador','jogador','human') , pressToContinue, fail)|
         ((Escolha = 0)->pressToContinue)
     ),
     !.
@@ -60,14 +60,14 @@ sideChoice:-
     name(Escolha,Escolher),
     clearConsole,
     (
-        ((Escolha = 1)-> startGame('jogador','ai', 'human') , pressToContinue, fail)|
-        ((Escolha = 2)-> startGame('ai','jogador','human'), pressToContinue, fail)|
+        ((Escolha = 1)-> difficultyChoice('jogador','ai') , pressToContinue, fail)|
+        ((Escolha = 2)-> difficultyChoice('ai','jogador'), pressToContinue, fail)|
         ((Escolha = 0)->pressToContinue)
     ),
     !.
 
 
-difficultyChoice(''):-
+difficultyChoice(PecasBrancas,PecasNegras,_):-
      clearConsole,
     write('Escolha a dificuldade: \n'),
     write('1 - Facil\n'),
