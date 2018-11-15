@@ -64,7 +64,7 @@ move([[DeX,DeY],[ParaX,ParaY]],Board,NewBoard):-
         ((existe_movimento(ParaX,ParaY,MovesD))->
             setPeca(ParaX,ParaY,Board,NewBoard,32)
         ;
-            fail
+            fail, !
         )
     ).
 
@@ -84,7 +84,7 @@ move([[DeX,DeY],[ParaX,ParaY]],Board,NewBoard):-
         ((existe_movimento(ParaX,ParaY,MovesD))->
             setPeca(ParaX,ParaY,Board,NewBoard,32)
         ;
-            fail
+            fail, !
         )
     ).
 

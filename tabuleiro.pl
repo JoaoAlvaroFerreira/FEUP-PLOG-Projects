@@ -13,7 +13,7 @@ tabuleiroInicial([[32,32,32,32,32,32,32,32,32,32],
                   [32,49,32,49,32,49,32,49,32,49],
                   [32,49,32,49,32,49,32,49,32,49],
                   [32,32,32,32,32,32,32,32,32,32],
-                  [32,49,32,32,32,32,32,32,32,32],
+                  [32,32,32,32,32,32,32,32,32,32],
                   [50,32,50,32,50,32,50,32,50,32],
                   [50,32,50,32,50,32,50,32,50,32],
                   [50,32,50,32,50,32,50,32,50,32],
@@ -78,7 +78,7 @@ imprimir([Head|Tabuleiro],Linha) :-
     imprimir(Tabuleiro,NewNumber).
 
 imprimirTabuleiro(Tabuleiro) :-
-    write('  |A|B|C|D|E|D|G|H|I|J|\n'),
+    write('  |A|B|C|D|E|F|G|H|I|J|\n'),
     write('--+-+-+-+-+-+-+-+-+-+-+\n'),
     imprimir(Tabuleiro,1).
 
@@ -89,11 +89,15 @@ movesToTabuleiro([[X,Y]|Resto],Tabuleiro,NewTabuleiro,Index):-
     setPeca(X,Y,Tabuleiro,NewTabuleiro1,Index),
     movesToTabuleiro(Resto,NewTabuleiro1,NewTabuleiro,Index).
 
-imprimirTabuleiroJogadas(Player,Linha,Coluna,Tabuleiro):-
+imprimirTabuleiroJogadas(Linha,Coluna,Tabuleiro):-
+    jogador(Player),
     getMovesPecaPlayer(Player,Linha,Coluna,Tabuleiro,Moves),
     getCaptures(Player,Linha,Coluna,Tabuleiro,CapMoves),
     getCanonDisparos(Player,Linha,Coluna,Tabuleiro,CannonMoves),
     movesToTabuleiro(Moves,Tabuleiro,NewTabuleiro1,35),
     movesToTabuleiro(CapMoves,NewTabuleiro1,NewTabuleiro2,36),
     movesToTabuleiro(CannonMoves,NewTabuleiro2,NewTabuleiro,88),
-    imprimirTabuleiro(NewTabuleiro).
+    imprimirTabuleiro(NewTabuleiro),
+    write('X-Disparos de canhoes'),nl,
+    write('$-Capturas possiveis'),nl,
+    write('#-Movimentos possiveis'),nl.

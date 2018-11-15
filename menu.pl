@@ -15,34 +15,37 @@ menu:-
     write('0 - Exit\n'),
     read_line(Escolher),
     name(Escolha,Escolher),
+    integer(Escolha),
     clearConsole,
     (
-        ((Escolha = 1)-> modeChoice , pressToContinue, fail)|
-        ((Escolha = 2)-> printScreen , pressToContinue, fail)|
-        ((Escolha = 0))
+        ((Escolha =:= 1)-> modeChoice , fail)|
+        ((Escolha =:= 2)-> printScreen , pressToContinue, fail)|
+        ((Escolha =:= 0))
     ),
     !.
-                                                        
 ola:- write('ola'),!.
-                                                           
 
 
 
 clearConsole :- write('\33\[2J').
 
 modeChoice:-
+    repeat,
     clearConsole,
     write('Escolha o modo de jogo: \n'),
-    write('1 - Jogador vs PC\n'),
-    write('2 - Jogador vs Jogador\n'),
+    write('1 - PC vs PC\n'),
+    write('2 - Jogador vs PC\n'),
+    write('3 - Jogador vs Jogador\n'),
     write('0 - Exit\n'),
     read_line(Escolher),
     name(Escolha,Escolher),
+    integer(Escolha),
     clearConsole,
     (
-        ((Escolha = 1)-> sideChoice, pressToContinue, fail)|
-        ((Escolha = 2)-> startGame('jogador','jogador','human') , pressToContinue, fail)|
-        ((Escolha = 0)->pressToContinue)
+        ((Escolha =:= 1)-> difficultyChoice(ai,ai))|
+        ((Escolha =:= 2)-> sideChoice)|
+        ((Escolha =:= 3)-> startGame(human,human,0))|
+        ((Escolha =:= 0))
     ),
     !.
 
@@ -51,6 +54,7 @@ modeChoice:-
 
 
 sideChoice:-
+    repeat,
     clearConsole,
     write('Escolha as pecas com que quer jogar: \n'),
     write('1 - Pecas Brancas\n'),
@@ -58,33 +62,36 @@ sideChoice:-
     write('0 - Exit\n'),
     read_line(Escolher),
     name(Escolha,Escolher),
+    integer(Escolha),
     clearConsole,
     (
-        ((Escolha = 1)-> difficultyChoice('jogador','ai') , pressToContinue, fail)|
-        ((Escolha = 2)-> difficultyChoice('ai','jogador'), pressToContinue, fail)|
-        ((Escolha = 0)->pressToContinue)
+        ((Escolha =:= 1)-> difficultyChoice(human,ai))|
+        ((Escolha =:= 2)-> difficultyChoice(ai,human))|
+        ((Escolha =:= 0))
     ),
     !.
 
 
-difficultyChoice(PecasBrancas,PecasNegras,_):-
-     clearConsole,
+difficultyChoice(PecasBrancas,PecasNegras):-
+    repeat,
+    clearConsole,
     write('Escolha a dificuldade: \n'),
     write('1 - Facil\n'),
     write('2 - DificiL\n'),
     write('0 - Exit\n'),
     read_line(Escolher),
     name(Escolha,Escolher),
+    integer(Escolha),
     clearConsole,
     (
-        ((Escolha = 1)-> startGame(PecasBrancas,PecasNegras,'facil') , pressToContinue, fail)|
-        ((Escolha = 2)-> startGame(PecasBrancas,PecasNegras,'dificil'), pressToContinue, fail)|
-        ((Escolha = 0)->pressToContinue)
+        ((Escolha =:= 1)-> startGame(PecasBrancas,PecasNegras,1))|
+        ((Escolha =:= 2)-> startGame(PecasBrancas,PecasNegras,2))|
+        ((Escolha =:= 0)->pressToContinue)
     ),
     !.
 
 
-separar(Linha,Coluna,[Letra|Resto]):-
+separar(Coluna,Linha,[Letra|Resto]):-
     name(Coluna,Resto),
     integer(Coluna),
     Coluna >= 1,

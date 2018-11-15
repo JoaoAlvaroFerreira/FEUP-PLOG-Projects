@@ -2,13 +2,13 @@
 
 
 addMove(1,Peca,Linha,Coluna,Moves,NovoMoves):-
-    (Peca =:= 50 -> 
+    ((Peca =:= 50 | Peca =:= 52) -> 
         NovoMoves = [[Linha,Coluna]|Moves]
     ;
         NovoMoves = Moves
     ).
 addMove(2,Peca,Linha,Coluna,Moves,NovoMoves):-
-    (Peca =:= 49 -> 
+    ((Peca =:= 49 | Peca =:= 51) -> 
         NovoMoves = [[Linha,Coluna]|Moves]
     ;
         NovoMoves = Moves

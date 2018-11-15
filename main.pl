@@ -23,7 +23,7 @@ printScreen:-
 
 
 pressToContinue:-
-    write('\n\nPrima qualquer botao para continuar.\n'),
+    write('\n\nPrima Enter para continuar.\n'),
     read_line(_).
 
 jogador(1).
@@ -35,9 +35,9 @@ jogador(1).
     write(N2)
     .*/
 
-test(NewBoard):-
+test:-
     tabuleiroInicial(Tab),
-    make_move(Tab,NewBoard,3),
+    make_move(Tab,NewBoard,2),
     imprimirTabuleiro(NewBoard)
     .
     
