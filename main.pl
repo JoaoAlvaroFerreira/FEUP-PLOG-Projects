@@ -37,7 +37,8 @@ jogador(1).
 
 test(NewBoard):-
     tabuleiroInicial(Tab),
-    make_move(Tab,NewBoard,1,0)
+    make_move(Tab,NewBoard,3),
+    imprimirTabuleiro(NewBoard)
     .
     
     

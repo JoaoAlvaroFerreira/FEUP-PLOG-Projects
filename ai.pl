@@ -22,14 +22,16 @@ make_jogada_cannon(Player,DeX,DeY,ParaX,ParaY,Board,Nivel,Lista,Move,Pontuacao):
     percurrer_pecas(Player,Pecas,NewBoard,NovoNivel,NovaLista,Move,Pontuacao).
 
 percurrer_jogadas(_,_,_,[],_,_,_,[],_).
-percurrer_jogadas(Player,X,Y,[[ParaX,ParaY]|Resto],Board,Nivel,Lista,[Move|MoveResto],Pontuacao):-
-    make_jogada_normal(Player,X,Y,ParaX,ParaY,Board,Nivel,Lista,Move,Pontuacao),
-    percurrer_jogadas(Player,X,Y,Resto,Board,Nivel,Lista,MoveResto,Pontuacao).
+percurrer_jogadas(Player,X,Y,[[ParaX,ParaY]|Resto],Board,Nivel,Lista,Move,Pontuacao):-
+    make_jogada_normal(Player,X,Y,ParaX,ParaY,Board,Nivel,Lista,Move1,Pontuacao),
+    percurrer_jogadas(Player,X,Y,Resto,Board,Nivel,Lista,Move2,Pontuacao),
+    append(Move1,Move2,Move).
 
 percurrer_cannon(_,_,_,[],_,_,_,[],_).
-percurrer_cannon(Player,X,Y,[[ParaX,ParaY]|Resto],Board,Nivel,Lista,[Move|MoveResto],Pontuacao):-
-    make_jogada_cannon(Player,X,Y,ParaX,ParaY,Board,Nivel,Lista,Move,Pontuacao),
-    percurrer_cannon(Player,X,Y,Resto,Board,Nivel,Lista,MoveResto,Pontuacao).
+percurrer_cannon(Player,X,Y,[[ParaX,ParaY]|Resto],Board,Nivel,Lista,Move,Pontuacao):-
+    make_jogada_cannon(Player,X,Y,ParaX,ParaY,Board,Nivel,Lista,Move1,Pontuacao),
+    percurrer_cannon(Player,X,Y,Resto,Board,Nivel,Lista,Move2,Pontuacao),
+    append(Move1,Move2,Move).
 
 empty_list([]).
 
@@ -42,7 +44,6 @@ jogada_atual(Player,X,Y,Board,Nivel,Lista,Move,Pontuacao):-
         true
     ;
         NovaPontuacao is Pontuacao + 1,
-        write(NovaPontuacao),nl,
         percurrer_jogadas(Player,X,Y,MovesC,Board,Nivel,NovaLista,Move2,NovaPontuacao)),
     append(Move1,Move2,Move3),
     getCanonDisparos(Player,X,Y,Board,MovesD),
@@ -54,7 +55,7 @@ jogada_atual(Player,X,Y,Board,Nivel,Lista,Move,Pontuacao):-
     append(Move3,Move4,Move).
 
 percurrer_pecas(_,[],_,_,_,[],_).
-percurrer_pecas(_,_,_,0,Proxima,Lista,Pontuacao):- Lista = [Pontuacao,Proxima].
+percurrer_pecas(_,_,_,0,Proxima,Lista,Pontuacao):- Lista = [[Pontuacao,Proxima]].
 percurrer_pecas(Player,[[X,Y]|Resto],Board,Nivel,Lista,Move,Pontuacao):-
     Nivel > 0,
     jogada_atual(Player,X,Y,Board,Nivel,Lista,MoveLista,Pontuacao),
@@ -63,14 +64,24 @@ percurrer_pecas(Player,[[X,Y]|Resto],Board,Nivel,Lista,Move,Pontuacao):-
 
 escolher_movimento(Escolhido,[[_,Escolhido]|_]).
 
-make_move(Board,NewBoard,Nivel,Pontuacao):-
+imprimirLista([]).
+imprimirLista([Este|Resto]):-
+    write(Este),nl,
+    imprimirLista(Resto).
+
+atualizar_board([],Board,Board).
+atualizar_board([De,Para|Resto],Board,NewBoard):-
+    Move = [De,Para],
+    move(Move,Board,NewBoard).
+
+make_move(Board,NewBoard,Nivel):-
     jogador(Player),
     valid_pecas_linhas(Player,Board,1,[],Pecas),
     write('Obteve Pecas'),nl,
     percurrer_pecas(Player,Pecas,Board,Nivel,[],Moves,0),
     write('Obteve Moves'),nl,
     sort(Moves,SortedMoves),
-    reverse(SortedMoves,NewBoard).
-    /*escolher_movimento(Escolha,ReversedMoves),
-    reverse(Escolha,NewBoard).
-    %move(Movimento,Board,NewBoard).*/
+    reverse(SortedMoves,ReversedMoves),
+    escolher_movimento(Escolha,ReversedMoves),
+    reverse(Escolha,Movimento),
+    atualizar_board(Movimento,Board,NewBoard).
