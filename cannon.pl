@@ -37,15 +37,22 @@ check_winner(Winner1,Winner2,Winner3,Winner):-
 		)
 	).
 
-game_over([Primeira,_,_,_,_,_,_,_,_,Decimo],All,Winner):-
+game_over2([Primeira,_,_,_,_,_,_,_,_,Decimo],All,Winner):-
 	check_linha_primeira(Primeira,Winner1),
 	check_linha_ultima(Decimo,Winner2),
 	((find_board_linha(All,49))->
 		Winner3 is 2
 	;
-		Winner3 is 0
+		((find_board_linha(All,50))->
+			Winner3 is 1
+		;
+			Winner3 is 0
+		)
 	),
 	check_winner(Winner1,Winner2,Winner3,Winner).
+
+game_over(Board,Winner):-
+	game_over2(Board,Board,Winner).
 
 
 validar_inicial(Linha,Coluna,Board):-
@@ -114,8 +121,12 @@ playTurn(Tabuleiro, NovoTabuleiro, ai,ai , Dificuldade):-
 play(_,_,_,_,0).
 play(Tabuleiro, PecasBrancas, PecasNegras,Dificuldade,_):-
 	repeat,
-	playTurn(Tabuleiro, NovoTabuleiro, PecasBrancas,PecasNegras,Dificuldade),
-	game_over(NovoTabuleiro,NovoTabuleiro,Winner),
+	((playTurn(Tabuleiro, NovoTabuleiro, PecasBrancas,PecasNegras,Dificuldade))->
+		true
+	;
+		write('Nao foram encontradas jogas.'),pressToContinue,Acabou = 0
+	),
+	game_over(NovoTabuleiro,Winner),
 	((Winner =:= 0)->
 		Acabou = 1
 	;

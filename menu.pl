@@ -77,7 +77,8 @@ difficultyChoice(PecasBrancas,PecasNegras):-
     clearConsole,
     write('Escolha a dificuldade: \n'),
     write('1 - Facil\n'),
-    write('2 - DificiL\n'),
+    write('2 - Normal\n'),
+    write('3 - DificiL\n'),
     write('0 - Exit\n'),
     read_line(Escolher),
     name(Escolha,Escolher),
@@ -86,6 +87,7 @@ difficultyChoice(PecasBrancas,PecasNegras):-
     (
         ((Escolha =:= 1)-> startGame(PecasBrancas,PecasNegras,1))|
         ((Escolha =:= 2)-> startGame(PecasBrancas,PecasNegras,2))|
+        ((Escolha =:= 3)-> startGame(PecasBrancas,PecasNegras,3))|
         ((Escolha =:= 0)->pressToContinue)
     ),
     !.

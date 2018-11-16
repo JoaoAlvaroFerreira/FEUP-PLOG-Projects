@@ -42,19 +42,23 @@ empty_list([]).
 jogada_atual(Player,X,Y,Board,Nivel,Lista,Move,Pontuacao):-
     NovaLista = [[X,Y]|Lista],
     getMovesPecaPlayer(Player,X,Y,Board,MovesN),
-    percurrer_jogadas(Player,X,Y,MovesN,Board,Nivel,NovaLista,Move1,Pontuacao),
+    ((empty_list(MovesN)) ->
+        Move1 = []
+    ;
+        percurrer_jogadas(Player,X,Y,MovesN,Board,Nivel,NovaLista,Move1,Pontuacao)
+    ),
     getCaptures(Player,X,Y,Board,MovesC),
     ((empty_list(MovesC)) ->
         Move2 = []
     ;
-        NovaPontuacao is Pontuacao + 1,
+        NovaPontuacao is Pontuacao + 1 * Nivel,
         percurrer_jogadas(Player,X,Y,MovesC,Board,Nivel,NovaLista,Move2,NovaPontuacao)),
     append(Move1,Move2,Move3),
     getCanonDisparos(Player,X,Y,Board,MovesD),
     ((empty_list(MovesD)) ->
         Move4 = []
     ;
-        NovaPontuacao2 is Pontuacao + 2,
+        NovaPontuacao2 is Pontuacao + 2 * Nivel,
         percurrer_cannon(Player,X,Y,MovesD,Board,Nivel,NovaLista,Move4,NovaPontuacao2)),
     append(Move3,Move4,Move).
 
@@ -66,6 +70,7 @@ percurrer_pecas(Player,[[X,Y]|Resto],Board,Nivel,Lista,Move,Pontuacao):-
     percurrer_pecas(Player,Resto,Board,Nivel,Lista,MoveLista2,Pontuacao),
     append(MoveLista,MoveLista2,Move).
 
+escolher_movimento([],[]).
 escolher_movimento(Escolhido,[[_,Escolhido]|_]).
 
 imprimirLista([]).
@@ -88,8 +93,24 @@ make_move(Board,NewBoard,Nivel):-
     jogador(Player),
     valid_pecas_linhas(Player,Board,1,[],Pecas),
     percurrer_pecas(Player,Pecas,Board,Nivel,[],Moves,0),
+    ((empty_list(Moves))->fail;true),
     sort(Moves,SortedMoves),
     reverse(SortedMoves,ReversedMoves),
     escolher_movimento(Escolha,ReversedMoves),
     reverse(Escolha,Movimento),
     atualizar_board(Movimento,Board,NewBoard).
+
+
+choose_move(Board,Level,Move):-
+    jogador(Player),
+    valid_pecas_linhas(Player,Board,1,[],Pecas),
+    percurrer_pecas(Player,Pecas,Board,Level,[],Moves,0),
+    ((empty_list(Moves))->fail;true),
+    sort(Moves,SortedMoves),
+    reverse(SortedMoves,ReversedMoves),
+    escolher_movimento(Escolha,ReversedMoves),
+    reverse(Escolha,Move).
+
+value(Board,Player,Value):-
+    valid_pecas_linhas(Player,Board,1,[],Pecas),
+    percurrer_pecas(Player,Pecas,Board,1,[],Value,0).

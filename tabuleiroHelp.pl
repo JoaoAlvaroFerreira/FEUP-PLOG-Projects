@@ -92,3 +92,5 @@ move([[DeX,DeY],[ParaX,ParaY]],Board,NewBoard):-
 
 
 
+
+
