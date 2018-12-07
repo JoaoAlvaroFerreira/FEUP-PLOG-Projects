@@ -124,7 +124,7 @@ play(Tabuleiro, PecasBrancas, PecasNegras,Dificuldade,_):-
 	((playTurn(Tabuleiro, NovoTabuleiro, PecasBrancas,PecasNegras,Dificuldade))->
 		true
 	;
-		write('Nao foram encontradas jogas.'),pressToContinue,Acabou = 0
+		write('Nao foram encontradas jogas.'),pressToContinue,fail
 	),
 	game_over(NovoTabuleiro,Winner),
 	((Winner =:= 0)->
