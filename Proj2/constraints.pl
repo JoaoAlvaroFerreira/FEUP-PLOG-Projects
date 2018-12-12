@@ -153,7 +153,7 @@ constraint6(Nlinha,Ncoluna,Tab,OrgElemento):-
     Valor16 + Valor17 + Valor18 #=< Valor19 + Valor20 + 2.
 constraint6(_,_,_,_).
 
-percurrerKlinha1(_,_,_,_,Tamanho,Tamanho,Valor):- Valor #= 0.
+percurrerKlinha1(_,_,_,_,K,Tamanho,Valor):-  K >= Tamanho,!,Valor #= 0.
 percurrerKlinha1(Nlinha,Ncoluna,Elemento,Tab,K,Tamanho,Value):-
     NovoK is K + 1,
     percurrerKlinha1(Nlinha,Ncoluna,Elemento,Tab,NovoK,Tamanho,AnteriorValor),!,
@@ -162,7 +162,7 @@ percurrerKlinha1(Nlinha,Ncoluna,Elemento,Tab,K,Tamanho,Value):-
     getPecaConstraint(NovaLinha,NovaColuna,Tab,7,Valor),
     Value #= AnteriorValor + Valor.
 
-percurrerKlinha2(_,_,_,_,Tamanho,Tamanho,Valor):- Valor #= 0.
+percurrerKlinha2(_,_,_,_,K,Tamanho,Valor):- K >= Tamanho,!,Valor #= 0.
 percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,K,Tamanho,Value):-
     NovoK is K + 1,
     percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,NovoK,Tamanho,AnteriorValor),!,
