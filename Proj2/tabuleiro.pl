@@ -29,30 +29,43 @@ tabuleiro(tab3,[
 ]).
 
 tabuleiro(tab4,[
+    [6,6,6,6,5],
     [6,6,6,6,6],
-    [6,6,6,6,6],
-    [6,6,1,5,6],
-    [6,6,6,6,6],
-    [0,5,6,6,6]
+    [0,2,6,6,6],
+    [5,6,6,6,6],
+    [5,6,6,1,6]
 ]).
 
 tabuleiro(tab5,[
-    [0,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,6],
-    [6,6,6,6,6,6,6,6,6,0]
+    [6,6,6,2,6,6,6,6,6,6],
+    [6,6,6,6,6,6,5,6,6,6],
+    [6,6,6,6,6,2,6,6,6,5],
+    [6,6,6,6,6,6,6,6,6,0],
+    [6,5,0,5,6,6,5,6,6,6],
+    [5,6,6,6,6,4,6,6,6,6],
+    [5,6,6,6,6,6,6,6,6,6],
+    [0,6,6,6,6,6,6,6,6,5],
+    [5,6,6,6,6,6,6,6,6,6],
+    [5,5,5,6,6,0,6,6,6,6]
 ]).
 
 tabuleiro(tab6,[
     [6,6,6],
     [6,4,6],
     [6,6,6]
+]).
+
+tabuleiro(tab7,[
+    [1,6,6,6,6,6,6,0,6,6],
+    [6,6,6,6,6,6,6,6,6,6],
+    [6,6,6,6,4,6,6,6,6,6],
+    [6,6,3,6,6,6,6,6,3,6],
+    [3,6,6,6,6,6,6,2,6,6],
+    [6,6,6,6,6,6,6,6,6,6],
+    [6,6,6,6,6,6,6,6,2,6],
+    [6,2,6,6,6,6,3,6,6,6],
+    [6,6,6,6,6,6,6,6,6,1],
+    [6,6,6,3,6,6,6,6,6,6]
 ]).
 
 getIterativo(Natual,Nobjetivo,[LinhaAtual|_],LinhaAtual):-
@@ -102,3 +115,88 @@ getPecaConstraint(Nlinha,Ncoluna,Tab,Tipo,Valor):-
     (Peca #= Tipo #/\ Valor #= 1) #\/ (Peca #\= Tipo #/\ Valor #= 0) .
 getPecaConstraint(_,_,_,_,Valor):-
     Valor #= 0.
+
+
+imprimirDivisao(Quantidade):-
+    Quantidade > 0,
+    write('+-'),
+    NovaQ is Quantidade - 1,
+    imprimirDivisao(NovaQ).
+imprimirDivisao(_):-
+    write('+\n').
+
+imprimirLine([],Tamanho,_):-
+    write('|'),
+    nl.
+
+    
+
+imprimirLine([9|Tail],Tamanho,2):-
+    write('|'),
+    write('# /'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([7|Tail],Tamanho,2):-
+    write('|'),
+    write('  /'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([8|Tail],Tamanho,2):-
+    write('|'),
+    write('\\  '),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([10|Tail],Tamanho,2):-
+    write('|'),
+    write('\\ #'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([11|Tail],Tamanho,2):-
+    write('|'),
+    write('   '),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([5|Tail],Tamanho,2):-
+    write('|'),
+    write('###'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([Head|Tail],Tamanho,2):-
+    write('|'),
+    format('#~d#',[Head]),
+    imprimirLine(Tail,Tamanho,2).
+
+
+imprimirLine([9|Tail],Tamanho,1):-
+    write('|'),
+    write('/  '),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([7|Tail],Tamanho,1):-
+    write('|'),
+    write('/ #'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([8|Tail],Tamanho,1):-
+    write('|'),
+    write('# \\'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([10|Tail],Tamanho,1):-
+    write('|'),
+    write('  \\'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([11|Tail],Tamanho,1):-
+    write('|'),
+    write('   '),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([5|Tail],Tamanho,1):-
+    write('|'),
+    write('###'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([Head|Tail],Tamanho,1):-
+    write('|'),
+    format('#~d#',[Head]),
+    imprimirLine(Tail,Tamanho,1).
+
+imprimir([],_,_).
+imprimir([Head|Tabuleiro],Linha,Tamanho) :-
+    imprimirLine(Head,Tamanho,2),
+    imprimirLine(Head,Tamanho,1),
+    NewNumber is Linha + 1,
+    imprimir(Tabuleiro,NewNumber,Tamanho).
+
+imprimirTabuleiro(Tabuleiro) :-
+    length(Tabuleiro,Tamanho),
+    imprimir(Tabuleiro,1,Tamanho).

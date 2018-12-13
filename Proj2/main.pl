@@ -11,7 +11,7 @@ criarConstraintsElemento(Nlinha,Ncoluna,[Elemento|Resto],Tab,[OrgElemento|OrgRes
     constraint4(Nlinha,Ncoluna,Tab,OrgElemento),
     constraint5(Nlinha,Ncoluna,Tab,OrgElemento),
     constraint6(Nlinha,Ncoluna,Tab,OrgElemento),
-    constraint7(Nlinha,Ncoluna,Elemento,Tab,OrgElemento),
+    %constraint7(Nlinha,Ncoluna,Elemento,Tab,OrgElemento),
     NovoNumero is Ncoluna +1,
     criarConstraintsElemento(Nlinha,NovoNumero,Resto,Tab,OrgResto).
 
@@ -27,7 +27,7 @@ criarTabuleiro(Length,Tab):-
     criarLinhas(Length,Tab,NovoTab),
     criarConstraints(1,Length,NovoTab,NovoTab,Tab),!,
     criarLabeling(Length,NovoTab),
-    write(NovoTab).
+    imprimirTabuleiro(NovoTab).
 
 shakashaka(Name):-
     tabuleiro(Name,Tab),
