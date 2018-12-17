@@ -1,7 +1,9 @@
 
 :- use_module(library(clpfd)).
+:- use_module(library(random)).
 :- include('constraints.pl').
 :- include('tabuleiro.pl').
+:- include('dinamico.pl').
 
 criarConstraintsElemento(_,_,[],_,_).
 criarConstraintsElemento(Nlinha,Ncoluna,[Elemento|Resto],Tab,[OrgElemento|OrgResto]):-
@@ -11,7 +13,7 @@ criarConstraintsElemento(Nlinha,Ncoluna,[Elemento|Resto],Tab,[OrgElemento|OrgRes
     constraint4(Nlinha,Ncoluna,Tab,OrgElemento),
     constraint5(Nlinha,Ncoluna,Tab,OrgElemento),
     constraint6(Nlinha,Ncoluna,Tab,OrgElemento),
-    %constraint7(Nlinha,Ncoluna,Elemento,Tab,OrgElemento),
+    constraint7(Nlinha,Ncoluna,Elemento,Tab,OrgElemento),
     NovoNumero is Ncoluna +1,
     criarConstraintsElemento(Nlinha,NovoNumero,Resto,Tab,OrgResto).
 
@@ -33,3 +35,7 @@ shakashaka(Name):-
     tabuleiro(Name,Tab),
     length(Tab,Tamanho),
     criarTabuleiro(Tamanho,Tab).
+
+dinamico(N):-
+    criarDinamicoTabuleiro(N,Tab),
+    criarTabuleiro(N,Tab),nl,fail.

@@ -167,7 +167,7 @@ percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,K,Tamanho,Value):-
     NovoK is K + 1,
     percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,NovoK,Tamanho,AnteriorValor),!,
     NovaLinha is Nlinha + K,
-    NovaColuna is Ncoluna + K,
+    NovaColuna is Ncoluna - K,
     getPecaConstraint(NovaLinha,NovaColuna,Tab,8,Valor),
     Value #= AnteriorValor + Valor.
 
@@ -195,7 +195,7 @@ percurrerK2(Nlinha,Ncoluna,Elemento,Tab,K):-
         percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,1,K,Valor1),
         getPecaConstraint(NovaLinha,NovaColuna,Tab,10,Valor2),
         getPecaConstraint(Nlinha,Ncoluna,Tab,10,Valor3),
-        Valor3 + Valor2 #=< Valor1 + 1,
+        Valor3 + Valor2  #=< Valor1 + 1,
 
         NovoK is K + 1,
         percurrerK2(Nlinha,Ncoluna,Elemento,Tab,NovoK)

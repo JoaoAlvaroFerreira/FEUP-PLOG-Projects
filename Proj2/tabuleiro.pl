@@ -50,9 +50,9 @@ tabuleiro(tab5,[
 ]).
 
 tabuleiro(tab6,[
-    [6,6,6],
-    [6,4,6],
-    [6,6,6]
+    [0,6,0],
+    [6,0,0],
+    [0,0,0]
 ]).
 
 tabuleiro(tab7,[
@@ -199,4 +199,4 @@ imprimir([Head|Tabuleiro],Linha,Tamanho) :-
 
 imprimirTabuleiro(Tabuleiro) :-
     length(Tabuleiro,Tamanho),
-    imprimir(Tabuleiro,1,Tamanho).
+    imprimir(Tabuleiro,1,Tamanho),!.
