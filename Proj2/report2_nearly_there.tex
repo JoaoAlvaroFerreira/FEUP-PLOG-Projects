@@ -1,0 +1,787 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+\usepackage[utf8x]{inputenc}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{listings}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Resolução de Problemas de Decisão usando
+Programação em Lógica com Restrições: Shakashaka}
+%
+\titlerunning{Shakashaka}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{João Álvaro Ferreira \and
+João Augusto Lima}
+
+\date{%
+    $^$FEUP-PLOG\\%
+    $^2$3MIEIC01\\[2ex]%
+    \today
+}
+
+%
+\authorrunning{João Lima e João Ferreira}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+
+\institute{Faculdade de Engenharia da Universidade do Porto,  R. Dr. Roberto Frias, 4200-465 Porto}
+%
+\maketitle              % typeset the header of the contribution
+%
+
+\let\Date\@FEUP-PLOG, Turma 3MIEIC1, Shakashaka 3
+\renewcommand{\abstractname}{Resumo}
+
+\begin{abstract}
+Este artigo pretende descrever o trabalho efetuado no âmbito do segundo projeto da unidade curricular de Programação em Lógica do Mestrado Integrado em Engenharia Informática e Computação.
+O objetivo do trabalho em questão é a construção de um programa em Programação em Lógica
+com Restrições para a resolução de um dos problemas de otimização ou decisão combinatória
+sugeridos no enunciado. Para este efeito, o problema escolhido foi a resolução e geração de tabuleiros com soluções possíveis do puzzle Shakashaka, sendo que o desenvolvimento foi feito em SICStus Prolog.
+
+\keywords{Shakashaka; SICStus, Prolog, FEUP}
+\end{abstract}
+%
+%
+%
+\section{Introdução}
+
+O objetivo deste trabalho é a demonstração dos conhecimentos sobre a resolução de problemas de otimização ou decisão combinatória com restrições em Prolog. Foi dada ao grupo a opção entre problemas de otimização e decisão e um leque de problemas variádos a resolver dentro destes âmbitos. 
+Tomando em conta os problemas disponíveis aquando da escolha, foi escolhido o puzzle Shakashaka, que consiste num tabuleiro retangular de tamanho variável com quadrados pretos e brancos, sendo que o objetivo do puzzle é preencher esse tabuleiro com triangulos de modo a que apenas formas retangulares restem nos espaços brancos.
+Este artigo explica o problema detalhadamente.
+
+\section{Descrição do Problema}
+O puzzle Shakashaka é um dos muitos quebra-cabeças popularizados pela publicadora Nikoli, que publicou também Sudoku. 
+
+O puzzle é jogado num tabuleiro retangular com uma disposição em grelha quadriculada. Nesta, podem-se encontrar quadrados brancos ou negros, sendo que os negros podem conter um número. O jogador pode preencher os quadrados brancos com um quadrado meio preenchido com um triangulo (sendo o quadrado dividido ao meio com uma diagonal e um dos lados preenchidos), havendo quatro possíveís preenchimentos de um quadrado pelo jogador - canto superior esquerdo, canto superior direito, canto inferior equerdo e canto inferior direito.
+
+O puzzle encontra-se resolvido quando as unicas áreas brancas presentes são retângulos e quadrados fechados. Para este efeito, quadrados brancos também podem ser deixados completamente brancos.
+Quanto à numeração em quadrados pretos, esta indica quantos quadrados preenchidos com um triangulo devem ter um dos seus lados em contacto com o quadrado preto em questão e é uma específicação extra não sempre presente, podendo ir de 1 a 4.
+
+Para além de ser capaz de resolver instâncias do puzzle Shakashaka que lhe sejam fornecidas, o programa tem também de ser capaz de gerar instâncias resolvíveis.
+
+
+\begin{figure}
+\begin{center}
+\includegraphics{shakashaka01.PNG}
+\caption{Um exemplo do puzzle Shakashaka num tabuleiro 5x5} \label{shakashaka01}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics{shakashaka01solved.PNG}
+\caption{Uma possível solução para a instância do Shakashaka mostrada na Fig. 1} \label{shakashaka01solved}
+\end{center}
+\end{figure}
+
+
+\section{Abordagem}
+
+Ao implementar o puzzle em questão em Prolog, o grupo decidiu que a representação do tabuleiro seria feita através de listas de listas. Na posição de um quadrado com uma determinada cor, número ou forma, utilizamos um número específico para cada um dos possíveis símbolos. Nomeadamente, para quadrados pretos com números utilizamos de números de 0 a 4, um quadrado preto sem número é o 5, um quadrado branco é representado pelo número 6 e os quadrados semi-preenchidos são repreentados pelos numeros 7 a 10. Servimo-nos também do número 11 para representar um quadrado branco re-escrito com branco, para efeito de lógica do programa.
+
+\begin{figure}
+\begin{center}
+\includegraphics{representacao01.PNG}
+\caption{Representacao do nosso trabalho do puzzle utilizado como exemplo nas figuras 1 e 2} \label{representacao01}
+\end{center}
+\end{figure}
+
+\subsection{Variaveis de Decisão}
+
+
+
+
+A solução pretendida para este puzzle é o tabuleiro inicial com alguns dos seus quadrados brancos substituídos por quadrados semi-preenchidos de modo a que este esteja de acordo com as regras para uma solução do puzzle válida, seguindo as indicações referidas nas secções anteriores.
+
+
+Como tal, as únicas variáveis de decisão são a lista de listas que representa o tabuleiro e o seu length, sendo estes também os argumentos da função de labeling.
+
+\subsection{Restrições}
+\textbf{Restrição 1 - Para cada quadrado branco}, ou este é reescrito para branco novamente (ficando com o código 11, como mencionado anteriormente) ou contem um e apenas um dos triângulos que o preenchem. Para verificar esta restrição, verifica-se se o quadrado a analisar tem um valor de 7 a 11. Para isto, utilizamos o predicado \textit{constraint1} e o predicado getPecaConstraint, que verifica se o valor do quadrado em questão é igual ou não ao valor indicado e, se sim, retorna 1 num valor auxiliar (caso contrario retorna 0). Os valores auxiliares são então todos somados e, caso o valor da soma não seja igual a 1, a solução não se aplica.
+
+
+\textbf{Restrição 2 - Para cada quadrado negro}, inicialmente considera-se se não tem número. Nesse caso, os seus vizinhos brancos têm algumas restrições. Por exemplo, supondo que  um deles é um determinado triângulo (ou quadrado semi-preenchido), o vizinho deste branco adjacente ao quadrado preto tem de ter um triângulo tal que estes formem um angulo de 45 graus. 
+
+\textbf{Restrição 3 - No caso do quadrado preto ter um número}, este terá de ter um número de quadrados semi-preenchidos adjacentes igual ao número indicado.
+
+
+\textbf{Restrição 4 - Para todo o quadrado semi-preenchido}, este tem de formar uma área branca com outros triângulos e, como tal, os triângulos semi-preenchidos adjacentes a este têm de ser iguais e formar continuídade com este (fazendo ambos parte do mesmo lado de um retângulo maior) ou serem-lhe perpendicular, de modo a formar um canto do retângulo ou quadrado.
+
+
+\textbf{Restrição 5 - Para todo o quadrado semi-preenchido}, os quadrados semi-preenchidos que lhe são adjacentes não podem ser iguais se dessa forma não formarem continuidade, já que dessa forma teremos uma área com um ângulo de 45 graus como canto o que leva a ser impossível formar um retângulo ou quadrado naquela área branca.
+
+\textbf{Restrição 6 - Exclusão de cantos côncavos.} Devido à restrição 5, este efeito só poderia acontecer com quadrados brancos, já que esta torna impossível a geração de uma solução com cantos concavos que contenham quadrados semi-preenchidos.
+
+\begin{figure}
+\begin{center}
+\includegraphics{restricao7.PNG}
+\caption{Representacao de uma solução de uma instância do puzzle em que ocorre um quadrado nested sem a restrição 7} \label{restricao7.PNG}
+\end{center}
+\end{figure}
+
+\textbf{Restrição 7 - Exclusão de quadrados e retângulos brancos nested}. Após todas as outras restrições, último problema que restava resolver para o bom solucionamento de todos os puzzles Shakashaka é a existência, em algumas soluções, de retângulos brancos que contêm outros quadrados, levando a áreas que têm o contorno de um retÂngulo ou quadrado branco mas cujo interior não é completamente branco. A imagem indicada é um exemplo do que pode acontecer na resolução de um puzzle Shakashaka sem esta restrição.
+
+
+
+\subsection{Função de Avaliação}
+Este é um problema de decisão e, como tal, a avaliação de uma solução passa meramente pela verificação de que esta se encontra correta, o que é feito pelas restrições. Devido à natureza do problema como um problema de programação de inteiros 0-1, é frequente existir apenas uma solução. Tendo isto em conta, mesmo que o nosso programa calculasse todas as soluções possíveis, não seria possível determinar uma solução superior já que o único critério a cumprir é se o puzzle se encontra resolvido ou não.
+
+\subsection{Estratégia de Pesquisa}
+O labeling para a resolução deste problema é feito através do predicado criarLabeling que, com o auxílio do predicado criarLabelingElemento, atribui valores sequencialmente a todos os valores de um tabuleiro NovoTab. Isto é feito após a criação dasrestrições e um cut, levando a que os únicos tabuleiros aceites sejam válidos.
+
+\section{Visualização da Solução}
+O programa é corrido através de dois predicados principais - o dynamic(N), que gera tabuleiros resolvidos com tamanhos NxN, e o shakashaka(Tab), que apresenta a resolução de um determinado Tabuleiro Tab que tenha sido previamente transcrito para o código.
+Para visualizar a solução, criamos um predicado imprimirTabuleiro que imprime o tabuleiro do jogo. Devido às conceções que tivemos de fazer para poder abstrair o puzzle de imagens com quadrados pretos, brancos e semi-preenchidos de várias fomas, a impressão do tabuleiro não seria facilmente interpretável sem algumas alterações.
+
+Para o efeito, decidimos simular os caractéres do jogo original que pretendemos representar em ASCII com o predicado imprimirLine. Podemos ver na figura 5 um exemplo desse predicado.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{exemplos.PNG}
+\caption{Exemplos do código para imprimir um tabuleiro interpretável} 
+\label{exemplos.PNG}
+\end{center}
+\end{figure}
+\paragraph{}
+\vspace*{-\parskip}
+
+
+Sendo que o resultado, utilizando o tabuleiro que resolvemos no início deste artigo, é o representado na figura 6.
+
+\begin{figure}
+\begin{center}
+\includegraphics{solucaonoprograma.PNG}
+\caption{Representacao da solução demonstrada nas Figuras 1 e 2 pelo nosso programa.} 
+\label{solucaonoprograma.PNG}
+\end{center}
+\end{figure}
+\paragraph{}
+\vspace*{-\parskip}
+
+
+
+\section{Resultados}
+Foi feita uma análise dos resultados estatísticos da execução do nosso programa respetiva à resolução de puzzles Shakashaka (ver Figura 7 e 8). Tomando em conta os dados obtidos, podemos chegar às seguintes conclusões:
+
+\begin{itemize}
+  \item O aumento do tempo de resolução relativamente ao tamanho do tabuleiro a resolver segue uma função exponencial.
+  \item Backtracks apenas ocorreram em puzzles com tamanho 10x10 (foram testados vários tabuleiros e os dados presentes nos restantes campos são a média dos resultados de todos os tabuleiros testados) com algumas variações,pelo que concluímos que para estes ocorrerem o puzzle tem de ter uma dimensão elevada. No entanto, a quantidade de vezes que estes ocorrerão depende largamente do puzzle em si e não apenas do tamanho.
+  \item A quantidade das ocorrências dos restantes fatores testados (entailmentes, prunings, contraints criados e resumptions) em função do tamanho do tabuleiro segue uma progressão linear, confirmando as nossas expetativas já que a função destes depende muito do tamanho do tabuleiro a resolver (por exemplo, prunings removem parte da árvore de decisões possíveis de modo a reduzir o seu tamanho e complexidade, algo que acontece independentemente da dificuldade do puzzle em si mas dependendo do tamanho do tabuleiro).
+\end{itemize}
+
+\begin{figure}
+\begin{center}
+\includegraphics{tabelaSolve.PNG}
+\caption{Tabela com os resultados para a solução de puzzles Shakashaka de diferentes dimensões.} 
+\label{tabelaSolve.PNG}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{graphSolve.PNG}
+\caption{Grafico com a relação entre o tempo de resolução e o tamanho de um determinado puzzle Shakashaka} 
+\label{graphSolve.PNG}
+\end{center}
+\end{figure}
+
+Quanto à geração dinamica de puzzles Shakashaka, podemos concluir através dos dados observados nas figuras 8 e 9 que a relação entre o tempo para gerar uma instância do puzzle e o seu tamanho é semelhante à relação entre o tempo de resolução e o tamanho de um tabuleiro. Este resultado encontra-se de acordo com as nossas expectativas já que para poder gerar um tabuleiro, o programa tem também de verificar se este tem uma solução possível, algo que fazemos resolvendo o tabuleiro com os métodos utilizados anteriormente para o efeito.
+
+\begin{figure}
+\begin{center}
+\includegraphics{tabelaDinamica.PNG}
+\caption{Tabela com a relação entre o tempo de geração de um puzzle Shakashaka (e respetiva resolução) e o seu tamanho} 
+\label{tabelaDinamica.PNG}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{graphDynamic.PNG}
+\caption{Grafico com a relação entre o tempo de geração de um puzzle Shakashaka (e respetiva resolução) e o seu tamanho} 
+\label{grahDynamic.PNG}
+\end{center}
+\end{figure}
+
+
+\section{Conclusões e Trabalho Futuro}
+Este projeto levou o grupo à conclusão de que quanto à resolução de problemas de decisão e optimização, a linguagem PROLOG é muito vantajosa devido a todas as suas capacidades relevantes para a efetuação de labeling de variáveis e aplicação de restrições (não pudemos explorar com profundidade a questão da avaliaão de resultados pelo que não faria sentido ofercer uma conclusão relativa a estes). No que toca a rapidez em procesos lógicos e optimização, PROLOG é o ideal.
+
+No entanto, embora seja poderosa nesses aspetos, é limitada em aspetos como o display de caractéres especiais e a maior dificuldade que existe em imprimir um tabuleiro, que embora não necessariamente difíceis podem-se tornar trabalhosas. 
+
+Podemos afirmando que julgamos ter cumprido os nossos objetivos neste trabalho de forma satisfatória.
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+\begin{thebibliography}{8}
+
+
+\bibitem{ref_book1}
+Vários autores, The Prolog Library - SICStus Prolog - https://sicstus.sics.se/sicstus/docs/4.3.0/html/sicstus/The-Prolog-Library.html
+
+\bibitem{ref_proc1}
+Slides da disciplina sobre PLR, Henrique Lopes Cardoso (regente), https://moodle.up.pt/course/view.php?id=1180, 2018, consultado em 23 de Deembro de 2018
+
+\bibitem{ref_url1}
+Erik D. Demaine, Yoshio Okamoto, Ryuhei Uehara and Yushi Uno - Computational Complexity and an Integer Programming Model of Shakashaka, \url{https://dspace.jaist.ac.jp/dspace/bitstream/10119/12147/1/20242.pdf}. Last accessed 23 December 2018.
+
+\bibitem{ref_url2}
+Regras do Shakashaka pela Nikoli
+\url{http://www.nikoli.co.jp/en/puzzles/shakashaka.html}. Last accessed 23 December 2018.
+
+\end{thebibliography}
+
+\section{Anexo}
+\subsection{main.pl}
+\begin{lstlisting}
+:- use_module(library(clpfd)).
+:- use_module(library(random)).
+:- include('constraints.pl').
+:- include('tabuleiro.pl').
+:- include('dinamico.pl').
+
+criarConstraintsElemento(_,_,[],_,_).
+criarConstraintsElemento(Nlinha,Ncoluna,[Elemento|Resto],Tab,[OrgElemento|OrgResto]):-
+    constraint1(Nlinha,Ncoluna,Tab,OrgElemento),
+    constraint2(Nlinha,Ncoluna,Tab,OrgElemento),
+    constraint3(Nlinha,Ncoluna,Tab,OrgElemento),
+    constraint4(Nlinha,Ncoluna,Tab,OrgElemento),
+    constraint5(Nlinha,Ncoluna,Tab,OrgElemento),
+    constraint6(Nlinha,Ncoluna,Tab,OrgElemento),
+    constraint7(Nlinha,Ncoluna,Elemento,Tab,OrgElemento),
+    NovoNumero is Ncoluna +1,
+    criarConstraintsElemento(Nlinha,NovoNumero,Resto,Tab,OrgResto).
+
+criarConstraints(_,_,[],_,_).
+criarConstraints(Nlinha,Length,[Linha|Resto],Tab,[OrgLinha|OrgResto]):-
+    criarConstraintsElemento(Nlinha,1,Linha,Tab,OrgLinha),
+    NovoNumero is Nlinha + 1,
+    criarConstraints(NovoNumero,Length,Resto,Tab,OrgResto).
+
+
+criarTabuleiro(Length,Tab):-
+    length(NovoTab,Length),
+    criarLinhas(Length,Tab,NovoTab),
+    criarConstraints(1,Length,NovoTab,NovoTab,Tab),!,
+    criarLabeling(Length,NovoTab),
+    imprimirTabuleiro(NovoTab).
+
+shakashaka(Name):-
+    tabuleiro(Name,Tab),
+    length(Tab,Tamanho),
+    statistics(runtime,[Start|_]),
+    criarTabuleiro(Tamanho,Tab),
+    statistics(runtime,[End|_]),
+    RunTime is End-Start,
+    format('Shakashaka default table solving took ~3d sec.~n', [RunTime]),
+    fd_statistics.
+
+dinamico(N):-
+    statistics(runtime,[Start|_]),
+    criarDinamicoTabuleiro(N,Tab),
+    criarTabuleiro(N,Tab),nl,fail,
+    statistics(runtime,[End|_]),
+    RunTime is End-Start,
+    format('Shakashaka dynamic table generation and solving took ~3d sec.~n', [RunTime]),
+    fd_statistics.
+\end{lstlisting}
+    
+\subsection{constraints.pl}
+\begin{lstlisting}
+constraint1(Nlinha,Ncoluna,Tab,OrgElemento):-
+    OrgElemento =:=6,!,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,7,Valor1),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,8,Valor2),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,9,Valor3),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,10,Valor4),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,11,Valor5),
+    Valor1 + Valor2 + Valor3 + Valor4 + Valor5 #= 1.
+constraint1(_,_,_,_).
+
+constraint2(Nlinha,Ncoluna,Tab,OrgElemento):-
+    OrgElemento =:= 5,!,
+    length(Tab,Tamanho),
+    Ncima is Nlinha - 1,
+    Nbaixo is Nlinha + 1,
+    Nesquerda is Ncoluna - 1,
+    Ndireita is Ncoluna + 1,
+    ((Ncima>0)->
+        getPecaConstraint(Ncima,Ncoluna,Tab,9,Valor1),
+        getPecaConstraint(Ncima,Ncoluna,Tab,10,Valor2),
+        Valor1 + Valor2  #= 0
+    ;
+        true
+    ),
+    ((Nbaixo=<Tamanho)->
+        getPecaConstraint(Nbaixo,Ncoluna,Tab,7,Valor4),
+        getPecaConstraint(Nbaixo,Ncoluna,Tab,8,Valor3),
+        Valor4 + Valor3  #= 0
+    ;
+        true
+    ),
+    ((Nesquerda>0)->
+        getPecaConstraint(Nlinha,Nesquerda,Tab,8,Valor5),
+        getPecaConstraint(Nlinha,Nesquerda,Tab,9,Valor6),
+        Valor5 + Valor6 #= 0
+    ;
+        true
+    ),
+    ((Nesquerda=<Tamanho)->
+        getPecaConstraint(Nlinha,Ndireita,Tab,7,Valor7),
+        getPecaConstraint(Nlinha,Ndireita,Tab,10,Valor8),
+        Valor7 + Valor8 #= 0    
+    ;
+        true
+    ).
+constraint2(_,_,_,_).
+    
+constraint3(Nlinha,Ncoluna,Tab,OrgElemento):-
+    OrgElemento =\= 6, OrgElemento =\= 5,!,
+    Ncima is Nlinha - 1,
+    Nbaixo is Nlinha + 1,
+    Nesquerda is Ncoluna - 1,
+    Ndireita is Ncoluna + 1,
+    getPecaConstraint(Ncima,Ncoluna,Tab,8,Valor1),
+    getPecaConstraint(Ncima,Ncoluna,Tab,7,Valor2),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,10,Valor3),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,9,Valor4),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,10,Valor5),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,7,Valor6),
+    getPecaConstraint(Nlinha,Ndireita,Tab,8,Valor7),
+    getPecaConstraint(Nlinha,Ndireita,Tab,9,Valor8),
+    Valor1 + Valor2 + Valor3 + Valor4 + Valor5 + Valor6 + Valor7 + Valor8 #= OrgElemento.
+constraint3(_,_,_,_).
+
+constraint4(Nlinha,Ncoluna,Tab,OrgElemento):-
+    OrgElemento =:= 6,!,
+    Ncima is Nlinha - 1,
+    Nbaixo is Nlinha + 1,
+    Nesquerda is Ncoluna - 1,
+    Ndireita is Ncoluna + 1,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,8,Valor1),
+    getPecaConstraint(Nlinha,Ndireita,Tab,7,Valor2),
+    getPecaConstraint(Nbaixo,Ndireita,Tab,8,Valor3),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,8,Valor4),
+    getPecaConstraint(Ncima,Ncoluna,Tab,9,Valor5),
+    getPecaConstraint(Ncima,Nesquerda,Tab,8,Valor6),
+    Valor1 #=< Valor2 + Valor3 , Valor4 #=< Valor5 + Valor6,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,7,Valor7),
+    getPecaConstraint(Ncima,Ncoluna,Tab,10,Valor8),
+    getPecaConstraint(Ncima,Ndireita,Tab,7,Valor9),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,7,Valor10),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,8,Valor11),
+    getPecaConstraint(Nbaixo,Nesquerda,Tab,7,Valor12),
+    Valor7 #=< Valor8 + Valor9 , Valor10 #=< Valor11 + Valor12,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,10,Valor13),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,9,Valor14),
+    getPecaConstraint(Ncima,Nesquerda,Tab,10,Valor15),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,10,Valor16),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,7,Valor17),
+    getPecaConstraint(Nbaixo,Ndireita,Tab,10,Valor18),
+    Valor13 #=< Valor14 + Valor15 , Valor16 #=< Valor17 + Valor18,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,9,Valor19),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,8,Valor20),
+    getPecaConstraint(Nbaixo,Nesquerda,Tab,9,Valor21),
+    getPecaConstraint(Nlinha,Ncoluna,Tab,9,Valor22),
+    getPecaConstraint(Nlinha,Ndireita,Tab,10,Valor23),
+    getPecaConstraint(Ncima,Ndireita,Tab,9,Valor24),
+    Valor19 #=< Valor20 + Valor21 , Valor22 #=< Valor23 + Valor24.
+constraint4(_,_,_,_).
+
+constraint5(Nlinha,Ncoluna,Tab,OrgElemento):-
+    OrgElemento =:= 6,!,
+    Nbaixo is Nlinha + 1,
+    Nesquerda is Ncoluna - 1,
+    Ndireita is Ncoluna + 1,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,8,Valor1),
+    getPecaConstraint(Nbaixo,Ndireita,Tab,8,Valor2),
+    getPecaConstraint(Nlinha,Ndireita,Tab,11,Valor3),
+    Valor1 + Valor2 #=< Valor3 + 1,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,7,Valor4),
+    getPecaConstraint(Nbaixo,Nesquerda,Tab,7,Valor5),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,11,Valor6),
+    Valor4 + Valor5 #=< Valor6 + 1,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,10,Valor7),
+    getPecaConstraint(Nbaixo,Ndireita,Tab,10,Valor8),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,11,Valor9),
+    Valor7 + Valor8 #=< Valor9 + 1,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,9,Valor10),
+    getPecaConstraint(Nbaixo,Nesquerda,Tab,9,Valor11),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,11,Valor12),
+    Valor10 + Valor11 #=< Valor12 + 1.
+constraint5(_,_,_,_).
+
+constraint6(Nlinha,Ncoluna,Tab,OrgElemento):-
+    OrgElemento =:= 6,!,
+    Ncima is Nlinha - 1,
+    Nbaixo is Nlinha + 1,
+    Nesquerda is Ncoluna - 1,
+    Ndireita is Ncoluna + 1,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,11,Valor1),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,11,Valor2),
+    getPecaConstraint(Nlinha,Ndireita,Tab,11,Valor3),
+    getPecaConstraint(Nbaixo,Ndireita,Tab,11,Valor4),
+    getPecaConstraint(Nbaixo,Ndireita,Tab,7,Valor5),
+    Valor1 + Valor2 + Valor3 #=< Valor4 + Valor5 + 2,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,11,Valor6),
+    getPecaConstraint(Ncima,Ncoluna,Tab,11,Valor7),
+    getPecaConstraint(Nlinha,Ndireita,Tab,11,Valor8),
+    getPecaConstraint(Ncima,Ndireita,Tab,11,Valor9),
+    getPecaConstraint(Ncima,Ndireita,Tab,10,Valor10),
+    Valor6 + Valor7 + Valor8 #=< Valor9 + Valor10 + 2,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,11,Valor11),
+    getPecaConstraint(Nbaixo,Ncoluna,Tab,11,Valor12),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,11,Valor13),
+    getPecaConstraint(Nbaixo,Nesquerda,Tab,11,Valor14),
+    getPecaConstraint(Nbaixo,Nesquerda,Tab,8,Valor15),
+    Valor11 + Valor12 + Valor13 #=< Valor14 + Valor15 + 2,
+    getPecaConstraint(Nlinha,Ncoluna,Tab,11,Valor16),
+    getPecaConstraint(Ncima,Ncoluna,Tab,11,Valor17),
+    getPecaConstraint(Nlinha,Nesquerda,Tab,11,Valor18),
+    getPecaConstraint(Ncima,Nesquerda,Tab,11,Valor19),
+    getPecaConstraint(Ncima,Nesquerda,Tab,9,Valor20),
+    Valor16 + Valor17 + Valor18 #=< Valor19 + Valor20 + 2.
+constraint6(_,_,_,_).
+
+percurrerKlinha1(_,_,_,_,K,Tamanho,Valor):-  K >= Tamanho,!,Valor #= 0.
+percurrerKlinha1(Nlinha,Ncoluna,Elemento,Tab,K,Tamanho,Value):-
+    NovoK is K + 1,
+    percurrerKlinha1(Nlinha,Ncoluna,Elemento,Tab,NovoK,Tamanho,AnteriorValor),!,
+    NovaLinha is Nlinha + K,
+    NovaColuna is Ncoluna + K,
+    getPecaConstraint(NovaLinha,NovaColuna,Tab,7,Valor),
+    Value #= AnteriorValor + Valor.
+
+percurrerKlinha2(_,_,_,_,K,Tamanho,Valor):- K >= Tamanho,!,Valor #= 0.
+percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,K,Tamanho,Value):-
+    NovoK is K + 1,
+    percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,NovoK,Tamanho,AnteriorValor),!,
+    NovaLinha is Nlinha + K,
+    NovaColuna is Ncoluna - K,
+    getPecaConstraint(NovaLinha,NovaColuna,Tab,8,Valor),
+    Value #= AnteriorValor + Valor.
+
+percurrerK1(Nlinha,Ncoluna,Elemento,Tab,K):-
+    length(Tab,Tamanho),
+    NovaLinha is Nlinha + K,
+    NovaColuna is Ncoluna + K,
+    ((NovaLinha =< Tamanho , NovaColuna =< Tamanho) ->
+        percurrerKlinha1(Nlinha,Ncoluna,Elemento,Tab,1,K,Valor1),
+        getPecaConstraint(NovaLinha,NovaColuna,Tab,9,Valor2),
+        getPecaConstraint(Nlinha,Ncoluna,Tab,9,Valor3),
+        Valor3 + Valor2 #=< Valor1 + 1,
+
+        NovoK is K + 1,
+        percurrerK1(Nlinha,Ncoluna,Elemento,Tab,NovoK)
+    ;
+        true
+    ).
+
+percurrerK2(Nlinha,Ncoluna,Elemento,Tab,K):-
+    length(Tab,Tamanho),
+    NovaLinha is Nlinha + K,
+    NovaColuna is Ncoluna - K,
+    ((NovaLinha =< Tamanho , NovaColuna > 0) ->
+        percurrerKlinha2(Nlinha,Ncoluna,Elemento,Tab,1,K,Valor1),
+        getPecaConstraint(NovaLinha,NovaColuna,Tab,10,Valor2),
+        getPecaConstraint(Nlinha,Ncoluna,Tab,10,Valor3),
+        Valor3 + Valor2  #=< Valor1 + 1,
+
+        NovoK is K + 1,
+        percurrerK2(Nlinha,Ncoluna,Elemento,Tab,NovoK)
+    ;
+        true
+    ).
+
+
+constraint7(Nlinha,Ncoluna,Elemento,Tab,OrgElemento):-
+    OrgElemento =:= 6,!,
+    percurrerK1(Nlinha,Ncoluna,Elemento,Tab,1),
+    percurrerK2(Nlinha,Ncoluna,Elemento,Tab,1).
+constraint7(_,_,_,_,_).
+\end{lstlisting}
+
+\subsection{tabuleiro.pl}
+\begin{lstlisting}
+tabuleiro(tab1,[
+    [6,5,6,6,5],
+    [6,6,6,5,6],
+    [6,6,6,6,6],
+    [6,6,6,6,5],
+    [2,6,6,6,6]
+]).
+
+tabuleiro(tab2,[
+    [5,2,6,6,2,5],
+    [2,6,6,6,6,2],
+    [6,6,6,6,6,6],
+    [6,6,6,6,6,6],
+    [2,6,6,6,6,2],
+    [5,2,6,6,2,5]
+]).
+
+tabuleiro(tab3,[
+    [2,6,6,6,5,6,6,6,5,5],
+    [6,6,6,5,6,6,6,6,6,6],
+    [6,6,6,6,6,6,5,6,6,6],
+    [6,6,6,6,6,6,6,6,6,6],
+    [6,6,4,6,6,6,6,6,6,2],
+    [5,6,6,6,6,6,6,6,2,6],
+    [6,6,6,6,6,6,4,6,6,6],
+    [6,6,6,6,6,5,6,6,6,6],
+    [6,6,6,6,5,6,6,6,5,6],
+    [2,6,6,2,6,6,6,6,5,6]
+]).
+
+tabuleiro(tab4,[
+    [6,6,6,6,5],
+    [6,6,6,6,6],
+    [0,2,6,6,6],
+    [5,6,6,6,6],
+    [5,6,6,1,6]
+]).
+
+tabuleiro(tabExemplo,[
+    [5,6,6,6,6],
+    [6,6,6,6,1],
+    [2,6,6,6,6],
+    [6,6,5,6,6],
+    [6,6,6,6,6]
+]).
+
+tabuleiro(tab5,[
+    [6,6,6,2,6,6,6,6,6,6],
+    [6,6,6,6,6,6,5,6,6,6],
+    [6,6,6,6,6,2,6,6,6,5],
+    [6,6,6,6,6,6,6,6,6,0],
+    [6,5,0,5,6,6,5,6,6,6],
+    [5,6,6,6,6,4,6,6,6,6],
+    [5,6,6,6,6,6,6,6,6,6],
+    [0,6,6,6,6,6,6,6,6,5],
+    [5,6,6,6,6,6,6,6,6,6],
+    [5,5,5,6,6,0,6,6,6,6]
+]).
+
+tabuleiro(tab6,[
+    [0,6,0],
+    [6,0,0],
+    [0,0,0]
+]).
+
+tabuleiro(tab7,[
+    [1,6,6,6,6,6,6,0,6,6],
+    [6,6,6,6,6,6,6,6,6,6],
+    [6,6,6,6,4,6,6,6,6,6],
+    [6,6,3,6,6,6,6,6,3,6],
+    [3,6,6,6,6,6,6,2,6,6],
+    [6,6,6,6,6,6,6,6,6,6],
+    [6,6,6,6,6,6,6,6,2,6],
+    [6,2,6,6,6,6,3,6,6,6],
+    [6,6,6,6,6,6,6,6,6,1],
+    [6,6,6,3,6,6,6,6,6,6]
+]).
+
+getIterativo(Natual,Nobjetivo,[LinhaAtual|_],LinhaAtual):-
+    Natual =:= Nobjetivo,!.
+getIterativo(Natual,Nobjetivo,[_|Resto],Linha):-
+    Natual \= Nobjetivo,
+    NovoIT is Natual + 1,
+    getIterativo(NovoIT,Nobjetivo,Resto,Linha).
+
+getPecaColuna(Ncoluna,Linha,Peca):-
+    getIterativo(1,Ncoluna,Linha,Peca).
+
+getLinha(Nlinha,Tabuleiro,Linha):-
+    getIterativo(1,Nlinha,Tabuleiro,Linha).
+
+getPeca(Nlinha,Ncoluna,Tabuleiro,Peca):-
+    getLinha(Nlinha,Tabuleiro,Linha),
+    getPecaColuna(Ncoluna,Linha,Peca).
+
+criarElemento([],[]).
+criarElemento([Elemento|Eresto],[NovoElem|NEresto]):-
+    ((Elemento =:= 6) ->
+        domain([NovoElem],7,11)
+    ;
+        NovoElem = Elemento
+    ),
+    criarElemento(Eresto,NEresto).
+
+criarLinhas(_,[],[]).
+criarLinhas(Length,[Linha|Lresto],[NovaLinha|NLresto]):-
+    length(NovaLinha,Length),
+    criarElemento(Linha,NovaLinha),
+    criarLinhas(Length,Lresto,NLresto).
+
+criarLabelingElemento([]).
+criarLabelingElemento([Elemento|Resto]):-
+    labeling([],[Elemento]),
+    criarLabelingElemento(Resto).
+
+criarLabeling(_,[]).
+criarLabeling(Length,[Linha|Resto]):-
+    criarLabelingElemento(Linha),
+    criarLabeling(Length,Resto).
+
+getPecaConstraint(Nlinha,Ncoluna,Tab,Tipo,Valor):-
+    getPeca(Nlinha,Ncoluna,Tab,Peca),!,
+    (Peca #= Tipo #/\ Valor #= 1) #\/ (Peca #\= Tipo #/\ Valor #= 0) .
+getPecaConstraint(_,_,_,_,Valor):-
+    Valor #= 0.
+
+
+imprimirDivisao(Quantidade):-
+    Quantidade > 0,
+    write('+-'),
+    NovaQ is Quantidade - 1,
+    imprimirDivisao(NovaQ).
+imprimirDivisao(_):-
+    write('+\n').
+
+imprimirLine([],Tamanho,_):-
+    write('|'),
+    nl.
+
+
+
+imprimirLine([9|Tail],Tamanho,2):-
+    write('|'),
+    write('# /'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([7|Tail],Tamanho,2):-
+    write('|'),
+    write('  /'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([8|Tail],Tamanho,2):-
+    write('|'),
+    write('\\  '),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([10|Tail],Tamanho,2):-
+    write('|'),
+    write('\\ #'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([11|Tail],Tamanho,2):-
+    write('|'),
+    write('   '),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([5|Tail],Tamanho,2):-
+    write('|'),
+    write('###'),
+    imprimirLine(Tail,Tamanho,2).
+imprimirLine([Head|Tail],Tamanho,2):-
+    write('|'),
+    format('#~d#',[Head]),
+    imprimirLine(Tail,Tamanho,2).
+
+
+imprimirLine([9|Tail],Tamanho,1):-
+    write('|'),
+    write('/  '),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([7|Tail],Tamanho,1):-
+    write('|'),
+    write('/ #'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([8|Tail],Tamanho,1):-
+    write('|'),
+    write('# \\'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([10|Tail],Tamanho,1):-
+    write('|'),
+    write('  \\'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([11|Tail],Tamanho,1):-
+    write('|'),
+    write('   '),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([5|Tail],Tamanho,1):-
+    write('|'),
+    write('###'),
+    imprimirLine(Tail,Tamanho,1).
+imprimirLine([Head|Tail],Tamanho,1):-
+    write('|'),
+    format('#~d#',[Head]),
+    imprimirLine(Tail,Tamanho,1).
+
+imprimir([],_,_).
+imprimir([Head|Tabuleiro],Linha,Tamanho) :-
+    imprimirLine(Head,Tamanho,2),
+    imprimirLine(Head,Tamanho,1),
+    NewNumber is Linha + 1,
+    imprimir(Tabuleiro,NewNumber,Tamanho).
+
+imprimirTabuleiro(Tabuleiro) :-
+    length(Tabuleiro,Tamanho),
+    imprimir(Tabuleiro,1,Tamanho),!.
+    
+   \end{lstlisting}
+
+\subsection{dinamico.pl}
+\begin{lstlisting}
+constraintDomain(Nlinha,Ncoluna,Tab):-
+    getPecaConstraint(Nlinha,Ncoluna,Tab,6,Valor1),
+    Valor1 #= 0,
+    Baixo is Nlinha + 1,
+    Direita is Ncoluna + 1,
+    Cima is Nlinha - 1,
+    Esquerda is Ncoluna - 1,
+    getPecaConstraint(Baixo,Ncoluna,Tab,6,Valor2),
+    getPecaConstraint(Cima,Ncoluna,Tab,6,Valor3),
+    getPecaConstraint(Nlinha,Direita,Tab,6,Valor4),
+    getPecaConstraint(Nlinha,Esquerda,Tab,6,Valor5),
+    getPeca(Nlinha,Ncoluna,Tab,Valor6),
+    Valor2 + Valor3 + Valor4 + Valor5 #= Valor6.
+constraintDomain(Nlinha,Ncoluna,Tab):-
+    getPecaConstraint(Nlinha,Ncoluna,Tab,6,Valor1),
+    Valor1 #=1.
+
+criarConstraintsElementoD(_,_,[],_).
+criarConstraintsElementoD(Nlinha,Ncoluna,[Elemento|Resto],Tab):-
+    constraintDomain(Nlinha,Ncoluna,Tab),
+    NovoNumero is Ncoluna +1,
+    criarConstraintsElementoD(Nlinha,NovoNumero,Resto,Tab).
+
+criarConstraintsD(_,_,[],_).
+criarConstraintsD(Nlinha,Length,[Linha|Resto],Tab):-
+    criarConstraintsElementoD(Nlinha,1,Linha,Tab),
+    NovoNumero is Nlinha + 1,
+    criarConstraintsD(NovoNumero,Length,Resto,Tab).
+
+criarLinha(0,[],_).
+criarLinha(N,[Linha|Resto],Length):-
+    N > 0,
+    length(Linha,Length),
+    domain(Linha,0,6),
+    NovoN is N - 1,
+    criarLinha(NovoN,Resto,Length).
+criarLinha(0,[],_).
+
+criarDinamicoTabuleiro(N,Devolver):-
+    criarLinha(N,Devolver,N),
+    criarConstraintsD(1,N,Devolver,Devolver),
+    criarLabeling(N,Devolver).
+\end{lstlisting}
+\end{document}
